@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const Blog = require('./models/blog.js');
+require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
 
