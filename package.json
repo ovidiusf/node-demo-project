@@ -1,5 +1,8 @@
 {
   "name": "node-demo-project",
+  "engines": {
+    "node": "15.2.0"
+  },
   "version": "1.0.0",
   "description": "a project which shows how to use the node environment",
   "main": "app.js",
