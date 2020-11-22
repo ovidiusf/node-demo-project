@@ -11,8 +11,7 @@ console.log(PORT);
 const app = express();
 
 // connect to MongoDB
-const dbURI =
-  'mongodb+srv://ovidiuf:test404@cluster1.rxqu2.mongodb.net/node-demo?retryWrites=true&w=majority';
+const dbURI = process.env.MONGO_TOKEN;
 mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
