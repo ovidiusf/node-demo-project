@@ -89,6 +89,21 @@ app.post('/blogs', async (req, res) => {
   }
 });
 
+app.delete('/blogs/:id', async (req, res) => {
+  // retrieve the id of the current blog
+  const id = req.params.id;
+
+  try {
+    await Blog.findByIdAndDelete(id);
+    // redirect in the browser by sending a json
+    res.json({
+      redirect: '/blogs'
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // 404 page
 app.use((req, res) => {
   res.status(404).render('404', { title: '404' });
