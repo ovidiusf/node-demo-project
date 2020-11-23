@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const Blog = require('./models/blog.js');
+const { render } = require('ejs');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
@@ -28,6 +29,11 @@ app.set('view engine', 'ejs');
 
 // middleware & static files
 app.use(express.static('public'));
+// Morgan is used for logging. Selected option: dev
+app.use(morgan('dev'));
+
+//accept form data
+app.use(express.urlencoded({ extended: true }));
 
 // Middleware used for logging
 app.use((req, res, next) => {
@@ -38,9 +44,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Morgan is used for logging. Selected option: dev
-app.use(morgan('dev'));
-
 app.get('/', (req, res) => {
   res.redirect('/blogs');
 });
@@ -50,7 +53,6 @@ app.get('/about', (req, res) => {
 });
 
 // blog routes
-
 app.get('/blogs', (req, res) => {
   Blog.find()
     .sort({ createdAt: -1 })
@@ -59,8 +61,32 @@ app.get('/blogs', (req, res) => {
     })
     .catch((err) => console.log(err));
 });
+
 app.get('/blogs/create', (req, res) => {
   res.render('create', { title: 'Create a new blog' });
+});
+
+app.get('/blogs/:id', async (req, res) => {
+  // retrieve the id of the current blog
+  const id = req.params.id;
+  try {
+    const result = await Blog.findById(id);
+    res.render('details', { title: 'Blog Details', blog: result });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.post('/blogs', async (req, res) => {
+  const blog = new Blog(req.body);
+  try {
+    const result = await blog.save();
+    if (result) {
+      res.redirect('/blogs');
+    }
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // 404 page
