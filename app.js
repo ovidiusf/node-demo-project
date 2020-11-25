@@ -1,8 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const Blog = require('./models/blog.js');
-const { render } = require('ejs');
+const blogRoutes = require('./routes/blogRoutes.js');
+
 require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
@@ -52,57 +52,8 @@ app.get('/about', (req, res) => {
   res.render('about', { title: 'About' });
 });
 
-// blog routes
-app.get('/blogs', (req, res) => {
-  Blog.find()
-    .sort({ createdAt: -1 })
-    .then((result) => {
-      res.render('index', { title: 'Home', blogs: result });
-    })
-    .catch((err) => console.log(err));
-});
-
-app.get('/blogs/create', (req, res) => {
-  res.render('create', { title: 'Create a new blog' });
-});
-
-app.get('/blogs/:id', async (req, res) => {
-  // retrieve the id of the current blog
-  const id = req.params.id;
-  try {
-    const result = await Blog.findById(id);
-    res.render('details', { title: 'Blog Details', blog: result });
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-app.post('/blogs', async (req, res) => {
-  const blog = new Blog(req.body);
-  try {
-    const result = await blog.save();
-    if (result) {
-      res.redirect('/blogs');
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-app.delete('/blogs/:id', async (req, res) => {
-  // retrieve the id of the current blog
-  const id = req.params.id;
-
-  try {
-    await Blog.findByIdAndDelete(id);
-    // redirect in the browser by sending a json
-    res.json({
-      redirect: '/blogs'
-    });
-  } catch (err) {
-    console.log(err);
-  }
-});
+// use the defined blog routes
+app.use('/blogs', blogRoutes);
 
 // 404 page
 app.use((req, res) => {
